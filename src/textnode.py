@@ -2,7 +2,22 @@ from enum import Enum
 
 
 class TextType(Enum):
-    """Enum of valid Markdown syntax"""
+    """Enum of valid Markdown syntax.
+    Pass valid string to assign to constant.
+
+    Constants:
+    TEXT: Raw text
+
+    BOLD: Text in bold
+
+    ITALIC: Text in italic
+
+    CODE: Text in code block
+
+    LINK: Text with url
+
+    IMG: Alt text and source for image
+    """
 
     TEXT = "text"
     BOLD = "bold"
@@ -13,13 +28,13 @@ class TextType(Enum):
 
 
 class TextNode:
-    """Class for representing inline text. Serves as an intermediate
-    representation between Markdown and HTML.
+    """Semantic representation of inline text. Serves as an intermediate
+    representation inbetween Markdown and HTML.
 
     Data members:
     text (str): value of interpreted Markdown text
 
-    text_type (TextType): the type of text the node contains, which is a member
+    text_type (TextType): the type of text the node contains. To pass a member
     of the TextType enum.
 
     url (str, optional): URL of the link or image. Defaults to None if nothing

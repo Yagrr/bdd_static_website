@@ -1,15 +1,17 @@
 class HTMLNode:
-    """Class to represent a node in an HTML document tree at the block level or inline
+    """Semantically represents an HTML element and its properties at the block
+    level or inline as an object for parsing.
 
-    Data members:
+    Data members - all optional by default:
 
-    tag (str): a string representing the HTML tag name (e.g., "p", "a", "h1", etc.).
+    tag (str): a string representing the HTML tag name (e.g., "p", "a", "h1", "img", etc.).
 
-    value (str): a string representing the value of the HTML tag (e.g., the text inside a paragraph).
+    value (str): a string representing the value of the HTML tag (i.e., the text inside a HTML element "p").
 
-    children (list[HTMLNode]): a list of HTMLNode objects representing the children of this node
+    children (list[HTMLNode]): a list of HTMLNode objects representing the children of this node.
 
-    props (dict): key-value pairs representing the attributes of the HTML tag.
+    props (dict{str: str}): dictionary of key-value pairs representing the attribute names of the HTML
+    tag as String key, and its content as String pair.
     """
 
     def __init__(self, tag=None, value=None, children=[], props={}):
@@ -19,11 +21,18 @@ class HTMLNode:
         self.props = props
 
     def to_html(self):
-        """Child classes to override this method to render themselves as HTML"""
+        """Child classes to override this method to render themselves as HTML
+        according to their own specification
+        """
         raise NotImplementedError
 
     def props_to_html(self):
-        """Convert props to string represetnation of '<a>' HTML tag"""
+        """Convert HTMLNode.props() to return a string representation of a
+        node's props in HTML syntax for use within its HTML element tag.
+
+        Used for parsing object HTMLNodes.tags() equals to "a".
+        TODO: Implementation for other tags like "img"
+        """
         if not self.props:
             return ""
         if "target" in self.props:
@@ -36,23 +45,27 @@ class HTMLNode:
 
 
 class LeafNode(HTMLNode):
-    """Class to represent a child node of a ParentNode.
-    Does not accept any children.
+    """
+    Semantically represents an HTML element and its properties at the block
+    level or inline as an object for parsing.
+    A LeafNode instance represents a child node with no children within a given ParentNode.children() list.
 
     Data members:
 
-    tag (str): a string representing the HTML tag name (e.g., "p", "a", "h1", etc.).
+    tag (str): a string representing the HTML tag name (e.g., "p", "a", "h1", "img", etc.).
 
-    value (str): a string representing the value of the HTML tag (e.g., the text inside a paragraph).
+    value (str): a string representing the value of the HTML tag (i.e., the text inside a HTML element "p").
 
-    props (dict, optional): key-value pairs representing the attributes of the HTML tag.
+    props (dict{str: str}, optional): dictionary of key-value pairs representing the attribute names of the HTML
+    tag as String key, and its content as String pair.
     """
 
     def __init__(self, tag, value, props={}):
         super().__init__(tag=tag, value=value, children=[], props=props)
 
     def to_html(self):
-        """Returns string representation of current node"""
+        """Returns the entire HTML syntax representation of the LeafNode object
+        as a string"""
         if not self.value:
             raise ValueError("Error: LeafNode does not have a value.")
         if not self.tag:
@@ -66,21 +79,27 @@ class LeafNode(HTMLNode):
 class ParentNode(HTMLNode):
     """Class to represent a parent node for handling nested HTMLNodes of class LeafNode. Any node
     that is not a "leaf" node (i.e., has children) is a "parent" node.
-    Does not have a value attribute.
+
+    Semantically represents HTML element and its properties at the block
+    level or inline as an object for parsing.
+    A ParentNode instance represents the parent of a node, and has no value
+    attribute. ParentNode.children can nest other ParentNodes.
 
     Data members:
     tag (str): a string representing the HTML tag name (e.g., "p", "a", "h1", etc.).
 
     children (list[HTMLNode]): a list of HTMLNode objects representing the children of this node
 
-    props (dict, optional): key-value pairs representing the attributes of the HTML tag.
+    props (dict{str: str}, optional): dictionary of key-value pairs representing the attribute names of the HTML
+    tag as String key, and its content as String pair.
     """
 
     def __init__(self, tag, children, props={}):
         super().__init__(tag=tag, value=None, children=children, props=props)
 
     def to_html(self):
-        """Returns string representation of current node"""
+        """Returns the entire HTML syntax representation of the ParentNode
+        object as a string"""
         if not self.tag:
             raise ValueError("Error: ParentNode does not have a tag.")
         if not self.children:
