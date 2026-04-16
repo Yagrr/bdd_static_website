@@ -35,10 +35,18 @@ class HTMLNode:
         """
         if not self.props:
             return ""
-        if "target" in self.props:
-            return f' href="{self.props["href"]}" target={self.props["target"]}'
-        else:
-            return f' href="{self.props["href"]}"'
+        try:
+            if self.tag == "a":
+                if "target" in self.props:
+                    return f' href="{self.props["href"]}" target={self.props["target"]}'
+                else:
+                    return f' href="{self.props["href"]}"'
+
+            if self.tag == "img":
+                return f' src="{self.props["src"]}" alt="{self.props["alt"]}"'
+
+        except Exception as e:
+            raise ValueError(f"Error: Invalid props\n{e}")
 
     def __repr__(self):
         return f"\nNode of tag: {self.tag}\nvalue: {self.value}\nchildren: {self.children}\nprops: {self.props}\n"
@@ -70,6 +78,7 @@ class LeafNode(HTMLNode):
             raise ValueError("Error: LeafNode does not have a value.")
         if not self.tag:
             return str(self.value)
+
         if self.props:
             return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
         else:
