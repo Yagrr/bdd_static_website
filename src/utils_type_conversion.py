@@ -114,3 +114,25 @@ def detect_delimited_nodes_to_add(
         nodes_to_add.append(TextNode(split_text[0], TextType.TEXT))
 
     return nodes_to_add
+
+
+def extract_markdown_images(text_md: str) -> list[tuple]:
+    """From a string input of raw markdown text, return a list of tuples where
+    each tuple contains the alt text and associated URL of any markdown images
+    contained within the string.
+
+    """
+    list_tuples_alt_url = []
+
+    return list_tuples_alt_url
+
+
+def extract_markdown_links(text_md: str) -> list[tuple]:
+    """From a string input of raw markdown text, return a list of tuples where
+    each tuple contains the anchor text and associated URL contained within the
+    input string.
+
+    """
+    list_tuples_anchor_url = []
+
+    return list_tuples_anchor_url
