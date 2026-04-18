@@ -24,7 +24,7 @@ def textnode_to_htmlnode(text_node: TextNode) -> LeafNode:
             return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
 
 
-def split_nodes_delimiter(old_nodes, delimiter, text_type) -> [TextNode]:
+def split_nodes_delimiter(old_nodes, delimiter, text_type) -> list[TextNode]:
     """From an input list of TextNodes of TextType.TEXT, splits each
     TextNode.text by a provided delimiter into a new list of new TextNodes with the
     input text_type.
@@ -52,7 +52,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type) -> [TextNode]:
         print("old node: ", node_old)
         if node_old.get_text_type() != TextType.TEXT:
             list_new_nodes.extend(node_old)
-            return
+            return list_new_nodes
 
         if delimiter not in node_old.text:
             raise ValueError(
