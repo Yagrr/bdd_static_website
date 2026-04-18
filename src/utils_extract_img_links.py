@@ -3,7 +3,7 @@ import re
 
 def extract_markdown_images(text_md: str) -> list[tuple]:
     """From a string input of raw markdown text, extract all substrings
-    matching the markdown images pattern into a list, return a list of tuples
+    matching the markdown image pattern to return a list of tuples
     where each tuple contains the alt text and associated URL of any markdown
     images contained within the string.
 
@@ -24,7 +24,7 @@ def extract_markdown_images(text_md: str) -> list[tuple]:
 
 def extract_markdown_links(text_md: str) -> list[tuple]:
     """From a string input of raw markdown text, extract all substrings
-    matching the markdown link pattern into a list, then return a list of tuples where
+    matching the markdown link pattern to return a list of tuples where
     each tuple contains the anchor text and associated URL contained within the
     input string.
 
@@ -36,7 +36,7 @@ def extract_markdown_links(text_md: str) -> list[tuple]:
     ```
     """
 
-    # Pattern: "[*](https://*)"
+    # Pattern: "[*](*)", not preceded by '!'
     pattern_link = r'(?<!!)\[([a-zA-Z0-9."\'\-\_ ]+)\]\(([a-zA-Z0-9.:/@\'"\-\_]+)(?=\))'
     matches = re.findall(pattern_link, text_md)
 
