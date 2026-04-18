@@ -10,8 +10,6 @@ class TestSplitNodes(unittest.TestCase):
 
         print("Case: text with no formatting")
         node1 = TextNode("This is a text node with no formatting", TextType.TEXT)
-        assert1_node = TextNode("This is a text node with no formatting", TextType.TEXT)
-        assert1_list = [assert1_node]
         node1_list = [node1]
         with self.assertRaises(ValueError):
             split_nodes_delimiter(node1_list, "**", TextType.BOLD)
