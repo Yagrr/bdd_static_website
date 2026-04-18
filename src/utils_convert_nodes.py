@@ -1,5 +1,6 @@
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
+from utils_extract_img_links import extract_markdown_images, extract_markdown_links
 
 
 def textnode_to_htmlnode(text_node: TextNode) -> LeafNode:
@@ -24,7 +25,7 @@ def textnode_to_htmlnode(text_node: TextNode) -> LeafNode:
             return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
 
 
-def split_nodes_delimiter(old_nodes, delimiter, text_type) -> list[TextNode]:
+def split_nodes_delimiter(nodes_old, delimiter, text_type) -> list[TextNode]:
     """From an input list of TextNodes of TextType.TEXT, splits each
     TextNode.text by a provided delimiter into a new list of new TextNodes with the
     input text_type.
@@ -48,11 +49,11 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type) -> list[TextNode]:
     ```
     """
     list_new_nodes = []
-    for node_old in old_nodes:
+    for node_old in nodes_old:
         print("old node: ", node_old)
         if node_old.get_text_type() != TextType.TEXT:
             list_new_nodes.extend(node_old)
-            return list_new_nodes
+            continue
 
         if delimiter not in node_old.text:
             raise ValueError(
