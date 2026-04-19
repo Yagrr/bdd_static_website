@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from utils_convert_nodes import split_nodes_delimiter
+from utils_inline_markdown import split_nodes_delimiter
 
 
 class TestSplitNodes(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestSplitNodes(unittest.TestCase):
 
         print("Case: converting TextNode with bold text")
         node2 = TextNode("With **bold** words", TextType.TEXT)
-        print(node2.get_text())
+        print(node2.text)
         assert2_node1 = TextNode("With ", TextType.TEXT)
         assert2_node2 = TextNode("bold", TextType.BOLD)
         assert2_node3 = TextNode(" words", TextType.TEXT)

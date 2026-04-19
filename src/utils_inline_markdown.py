@@ -1,6 +1,5 @@
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
-from utils_extract_img_links import extract_markdown_images, extract_markdown_links
 
 
 def textnode_to_htmlnode(text_node: TextNode) -> LeafNode:
@@ -28,7 +27,7 @@ def textnode_to_htmlnode(text_node: TextNode) -> LeafNode:
 def split_nodes_delimiter(nodes_old, delimiter, text_type) -> list[TextNode]:
     """From an input list of TextNodes of TextType.TEXT, splits each
     TextNode.text by a provided delimiter into a new list of new TextNodes with the
-    input text_type.
+    input text_type. Can handle unclosed delimiters.
 
     Used to detect inline formatting within a string
     TextNode.text to produce new TextNodes of the appropriate type.
@@ -48,23 +47,20 @@ def split_nodes_delimiter(nodes_old, delimiter, text_type) -> list[TextNode]:
             ]
     ```
     """
-    list_new_nodes = []
+    new_nodes = []
     for node_old in nodes_old:
-        print("old node: ", node_old)
-        if node_old.get_text_type() != TextType.TEXT:
-            list_new_nodes.extend(node_old)
+        if node_old.text_type != TextType.TEXT:
+            new_nodes.append(node_old)
             continue
-
         if delimiter not in node_old.text:
-            raise ValueError(
-                f"Error: invalid markdown text due to missing delimiter in the following node:\n{node_old}"
-            )
+            new_nodes.append(node_old)
+            continue
 
         nested_nodes_to_add = detect_delimited_nodes_to_add(
             node_old, delimiter, text_type
         )
-        list_new_nodes.extend(nested_nodes_to_add)
-    return list_new_nodes
+        new_nodes.extend(nested_nodes_to_add)
+    return new_nodes
 
 
 def detect_delimited_nodes_to_add(
@@ -74,7 +70,7 @@ def detect_delimited_nodes_to_add(
     according to a given delimiter into a list of TextNodes.
 
 
-    Used to detect text in the input Textnode inbetween characters matching the
+    Used to detect text in the input Textnode located etween characters matching the
     input delimiter to create TextNodes of matching input text_type. If text is
     not within the given delimiter, appends as TextNode of TextType.TEXT into
     the returned list.
@@ -83,6 +79,7 @@ def detect_delimited_nodes_to_add(
     """
     nodes_to_add = []
     split_text = node_to_split.text.split(delimiter, maxsplit=2)
+
     if split_text == [""]:
         return []
 
@@ -90,25 +87,22 @@ def detect_delimited_nodes_to_add(
         text_before_delimiter = split_text[0]
         text_in_delimiter = split_text[1]
         text_after_delimiter = split_text[2]
-        # Case: First word is regular text, and not the delimiter. Append to node.
+
         if text_before_delimiter != "":
             nodes_to_add.append(TextNode(text_before_delimiter, TextType.TEXT))
 
-        # Case: Text in delimiter is the regular text, and not the delimiter.
-        # If it is, then the delimiter to the text after.
         if text_in_delimiter != "":
             nodes_to_add.append(TextNode(text_in_delimiter, text_type))
         else:
             text_after_delimiter = delimiter + text_after_delimiter
 
-        # Case: Text after delimiter is regular text.
-        # If equals empty string then this means the string is the delimiter and the last word.
         if text_after_delimiter != "":
             split_text = split_text[2].split(delimiter, maxsplit=2)
         else:
-            # Don't add text after delimiter.
             nodes_to_add.append(TextNode(text_in_delimiter, text_type))
 
+    # Handle remaining split text, as it may contain an unclosed delimiter
+    # where len(split_text) == 2
     if len(split_text) == 2:
         nodes_to_add.append(TextNode(delimiter.join(split_text), TextType.TEXT))
     else:
