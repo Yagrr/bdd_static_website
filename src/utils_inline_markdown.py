@@ -150,6 +150,7 @@ def split_nodes_image(nodes_old: list[TextNode]):
     list_new_nodes = []
     for node_old in nodes_old:
         list_extracted_nodes = []
+
         if node_old.text == "":
             continue
         if node_old.text_type != TextType.TEXT:
@@ -167,10 +168,15 @@ def split_nodes_image(nodes_old: list[TextNode]):
         idx_previous_delimiter_start_position = 0
         previous_delimiter_length = 0
 
-        for k, image_tuple in enumerate(list_tuple_extracted_images):
+        k = -1
+        for image_tuple in list_tuple_extracted_images:
             image_alt_text = image_tuple[0]
             image_source = image_tuple[1]
+
             delimiter = f"![{image_alt_text}]({image_source})"
+
+            k += 1
+
             split_text = node_old.text.split(delimiter, maxsplit=1)
 
             # Delimiter is at the beginning of node text.
@@ -178,13 +184,8 @@ def split_nodes_image(nodes_old: list[TextNode]):
                 list_extracted_nodes.append(
                     TextNode(image_alt_text, TextType.IMG, image_source)
                 )
-                continue
-
-            # Delimiter is at the end of node text.
-            if split_text[1] == "":
-                list_extracted_nodes.append(
-                    TextNode(image_alt_text, TextType.IMG, image_source)
-                )
+                idx_previous_delimiter_start_position = node_old.text.index(delimiter)
+                previous_delimiter_length = len(delimiter)
                 continue
 
             """
@@ -193,8 +194,6 @@ def split_nodes_image(nodes_old: list[TextNode]):
             split_text[0] is guaranteed to be some text that is not TextType.IMG
             """
             if k == 0:
-                idx_previous_delimiter_start_position = split_text.index(delimiter)
-                previous_delimiter_length = len(delimiter)
                 list_extracted_nodes.append(
                     TextNode(
                         split_text[0],
@@ -205,6 +204,8 @@ def split_nodes_image(nodes_old: list[TextNode]):
                 list_extracted_nodes.append(
                     TextNode(image_alt_text, TextType.IMG, image_source)
                 )
+                idx_previous_delimiter_start_position = node_old.text.index(delimiter)
+                previous_delimiter_length = len(delimiter)
                 continue
 
             """ 
@@ -215,29 +216,39 @@ def split_nodes_image(nodes_old: list[TextNode]):
             text_between_images = (text to the left of current delimiter) sliced to
             [where the last delimiter ended : end of split_text[0]]
             """
-            text_between_images = split_text[0][
-                idx_previous_delimiter_start_position + previous_delimiter_length - 1 :
+            text_between_links = split_text[0][
+                idx_previous_delimiter_start_position + previous_delimiter_length :
             ]
 
-            list_extracted_nodes.append(TextNode(text_between_images, TextType.TEXT))
+            list_extracted_nodes.append(TextNode(text_between_links, TextType.TEXT))
             list_extracted_nodes.append(
                 TextNode(image_alt_text, TextType.IMG, image_source)
             )
 
             # Update the position where the delimiter is detected, and the
             # length of the previous delimiter
-            idx_previous_delimiter_start_position = split_text.index(delimiter)
+            idx_previous_delimiter_start_position = node_old.text.index(delimiter)
             previous_delimiter_length = len(delimiter)
 
-        list_new_nodes.extend(list_extracted_nodes)
+        # All tuples passed. Check if there's still text left.
+        # If there is, then append it as TextType.TEXT to extracted_nodes then add it to the list_new_nodes
+        if (idx_previous_delimiter_start_position + previous_delimiter_length) == len(
+            node_old.text
+        ):
+            list_new_nodes.extend(list_extracted_nodes)
+        else:
+            idx = idx_previous_delimiter_start_position + previous_delimiter_length
+            list_extracted_nodes.append(TextNode(node_old.text[idx:], TextType.TEXT))
+            list_new_nodes.extend(list_extracted_nodes)
 
     return list_new_nodes
 
 
-def split_nodes_link(nodes_old):
+def split_nodes_link(nodes_old: list[TextNode]):
     list_new_nodes = []
     for node_old in nodes_old:
         list_extracted_nodes = []
+
         if node_old.text == "":
             continue
         if node_old.text_type != TextType.TEXT:
@@ -245,7 +256,6 @@ def split_nodes_link(nodes_old):
             continue
 
         list_tuple_extracted_links = extract_markdown_links(node_old.text)
-
         # No links detected; skip to next node.
         if list_tuple_extracted_links == []:
             list_new_nodes.append(node_old)
@@ -255,34 +265,30 @@ def split_nodes_link(nodes_old):
         idx_previous_delimiter_start_position = 0
         previous_delimiter_length = 0
 
-        for k, link_tuple in enumerate(list_tuple_extracted_links):
+        k = -1
+        for link_tuple in list_tuple_extracted_links:
             link_text = link_tuple[0]
             link_url = link_tuple[1]
             delimiter = f"[{link_text}]({link_url})"
-            split_text = node_old.text.split(delimiter, maxsplit=1)
 
+            k += 1
+
+            split_text = node_old.text.split(delimiter, maxsplit=1)
             # Delimiter is at the beginning of node text.
             if split_text[0] == "":
                 list_extracted_nodes.append(
                     TextNode(link_text, TextType.LINK, link_url)
                 )
-                continue
-
-            # Delimiter is at the end of node text.
-            if split_text[1] == "":
-                list_extracted_nodes.append(
-                    TextNode(link_text, TextType.LINK, link_url)
-                )
+                idx_previous_delimiter_start_position = node_old.text.index(delimiter)
+                previous_delimiter_length = len(delimiter)
                 continue
 
             """
             First tuple
             Delimiter is not at the beginning of node text.
-            split_text[0] is guaranteed to be some text that is not TextType.IMG
+            split_text[0] is guaranteed to be some text that is not TextType.LINK
             """
             if k == 0:
-                idx_previous_delimiter_start_position = split_text.index(delimiter)
-                previous_delimiter_length = len(delimiter)
                 list_extracted_nodes.append(
                     TextNode(
                         split_text[0],
@@ -293,6 +299,8 @@ def split_nodes_link(nodes_old):
                 list_extracted_nodes.append(
                     TextNode(link_text, TextType.LINK, link_url)
                 )
+                idx_previous_delimiter_start_position = node_old.text.index(delimiter)
+                previous_delimiter_length = len(delimiter)
                 continue
 
             """ 
@@ -304,7 +312,7 @@ def split_nodes_link(nodes_old):
             [where the last delimiter ended : end of split_text[0]]
             """
             text_between_links = split_text[0][
-                idx_previous_delimiter_start_position + previous_delimiter_length - 1 :
+                idx_previous_delimiter_start_position + previous_delimiter_length :
             ]
 
             list_extracted_nodes.append(TextNode(text_between_links, TextType.TEXT))
@@ -312,9 +320,19 @@ def split_nodes_link(nodes_old):
 
             # Update the position where the delimiter is detected, and the
             # length of the previous delimiter
-            idx_previous_delimiter_start_position = split_text.index(delimiter)
+            idx_previous_delimiter_start_position = node_old.text.index(delimiter)
             previous_delimiter_length = len(delimiter)
 
-        list_new_nodes.extend(list_extracted_nodes)
+        # All tuples passed. Check if there's still text left.
+        # If there is, then append it as TextType.TEXT
+        if (idx_previous_delimiter_start_position + previous_delimiter_length) == len(
+            node_old.text
+        ):
+            list_new_nodes.extend(list_extracted_nodes)
+            continue
+        else:
+            idx = idx_previous_delimiter_start_position + previous_delimiter_length
+            list_extracted_nodes.append(TextNode(node_old.text[idx:], TextType.TEXT))
+            list_new_nodes.extend(list_extracted_nodes)
 
     return list_new_nodes
