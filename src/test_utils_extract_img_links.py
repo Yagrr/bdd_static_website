@@ -1,4 +1,4 @@
-from utils_extract_img_links import extract_markdown_images, extract_markdown_links
+from utils_inline_markdown import extract_markdown_images, extract_markdown_links
 
 import unittest
 
