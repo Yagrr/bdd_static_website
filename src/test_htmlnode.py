@@ -7,7 +7,6 @@ class TestHTMLNode(unittest.TestCase):
     # Testing HTMLNode capabilities
     def test_to_html_raise_error(self):
         node1 = HTMLNode("p", "Some text here")
-        print(node1)
         with self.assertRaises(NotImplementedError):
             node1.to_html()
 
