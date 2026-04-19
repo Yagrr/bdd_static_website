@@ -23,6 +23,28 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
         )
 
+    def test_delim_italic_start(self):
+        node = TextNode("_Italic_ words here with an unclosed_delimiter", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("Italic", TextType.ITALIC),
+                TextNode(" words here with an unclosed_delimiter", TextType.TEXT),
+            ],
+        )
+
+    def test_delim_code(self):
+        node = TextNode("This is a text node with a `code block`", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This is a text node with a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+            ],
+        )
+
     def test_delim_bold_multiple(self):
         node = TextNode(
             "With **bold** words **here** and an _italicised_ word", TextType.TEXT
@@ -45,10 +67,12 @@ class TestInlineMarkdown(unittest.TestCase):
     def test_delim_multiple_nodes(self):
         node_1 = TextNode("With **bold** words", TextType.TEXT)
         node_2 = TextNode(
-            "With **bold** words **here** and an _italicised_ word", TextType.TEXT
+            "With **bold** words **here**, an _italicised_ word and a `code block`",
+            TextType.TEXT,
         )
         new_nodes = split_nodes_delimiter([node_1, node_2], "**", TextType.BOLD)
         new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+        new_nodes = split_nodes_delimiter(new_nodes, "`", TextType.CODE)
         self.assertListEqual(
             new_nodes,
             [
@@ -59,15 +83,17 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("bold", TextType.BOLD),
                 TextNode(" words ", TextType.TEXT),
                 TextNode("here", TextType.BOLD),
-                TextNode(" and an ", TextType.TEXT),
+                TextNode(", an ", TextType.TEXT),
                 TextNode("italicised", TextType.ITALIC),
-                TextNode(" word", TextType.TEXT),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
             ],
         )
 
-    def test_split_node_delimiter_no_formatting(self):
-        node = TextNode("This is a text node with no formatting", TextType.TEXT)
-        self.assertListEqual([node], [node])
+    def test_delim_no_formatting(self):
+        node_1 = TextNode("This is a text node with no formatting", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node_1], "_", TextType.ITALIC)
+        self.assertListEqual(new_nodes, [node_1])
 
     """Test extract_markdown_images and links functions"""
 
