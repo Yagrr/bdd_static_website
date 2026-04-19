@@ -28,7 +28,7 @@ class TestTextNode(unittest.TestCase):
         node_1 = TextNode("Text node with link", TextType.LINK, "https://www.boot.dev")
         self.assertEqual(
             repr(node_1),
-            f"TextNode(\ntext:\n{'Text node with link'}\nTextType:\n{'link'}\nurl:\n{'https://www.boot.dev'}\n)",
+            f"TextNode(\ntext:\n'{'Text node with link'}'\nTextType: '{'link'}'\nurl: '{'https://www.boot.dev'}')\n",
         )
         pass
 
