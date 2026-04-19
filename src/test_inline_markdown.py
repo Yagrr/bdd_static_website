@@ -1,52 +1,132 @@
 import unittest
 
 from textnode import TextNode, TextType
-from utils_inline_markdown import split_nodes_delimiter
+from utils_inline_markdown import (
+    split_nodes_delimiter,
+    extract_markdown_links,
+    extract_markdown_images,
+)
 
 
-class TestSplitNodes(unittest.TestCase):
-    def test_split_node_delimiter(self):
-        print("=== Testing split_node_delimiter ===")
+class TestInlineMarkdown(unittest.TestCase):
+    """Test split_nodes_delimiter()"""
 
-        print("Case: text with no formatting")
-        node1 = TextNode("This is a text node with no formatting", TextType.TEXT)
-        node1_list = [node1]
-        with self.assertRaises(ValueError):
-            split_nodes_delimiter(node1_list, "**", TextType.BOLD)
+    def test_delim_bold(self):
+        node = TextNode("With **bold** words", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("With ", TextType.TEXT),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" words", TextType.TEXT),
+            ],
+        )
 
-        print("Case: converting TextNode with bold text")
-        node2 = TextNode("With **bold** words", TextType.TEXT)
-        print(node2.text)
-        assert2_node1 = TextNode("With ", TextType.TEXT)
-        assert2_node2 = TextNode("bold", TextType.BOLD)
-        assert2_node3 = TextNode(" words", TextType.TEXT)
-        assert2_list = [assert2_node1, assert2_node2, assert2_node3]
-        node2_list = [node2]
-        split2 = split_nodes_delimiter(node2_list, "**", TextType.BOLD)
-        self.assertEqual(split2, assert2_list)
-
-        node3 = TextNode(
+    def test_delim_bold_multiple(self):
+        node = TextNode(
             "With **bold** words **here** and an _italicised_ word", TextType.TEXT
         )
-        assert3_node1 = TextNode("With ", TextType.TEXT)
-        assert3_node2 = TextNode("bold", TextType.BOLD)
-        assert3_node3 = TextNode(" words ", TextType.TEXT)
-        assert3_node4 = TextNode("here", TextType.BOLD)
-        assert3_node5 = TextNode(" and an _italicised_ word", TextType.TEXT)
-        assert3_list = [
-            assert3_node1,
-            assert3_node2,
-            assert3_node3,
-            assert3_node4,
-            assert3_node5,
-        ]
-        node3_list = [node3]
-        split3 = split_nodes_delimiter(node3_list, "**", TextType.BOLD)
-        self.assertEqual(split3, assert3_list)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("With ", TextType.TEXT),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" words ", TextType.TEXT),
+                TextNode("here", TextType.BOLD),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("italicised", TextType.ITALIC),
+                TextNode(" word", TextType.TEXT),
+            ],
+        )
 
-        combined_list = [node2, node3]
-        split_combined = split_nodes_delimiter(combined_list, "**", TextType.BOLD)
-        assert_combined_list = assert2_list.copy()
-        # assert_combined_list.extend(assert2_list)
-        assert_combined_list.extend(assert3_list)
-        self.assertEqual(split_combined, assert_combined_list)
+    def test_delim_multiple_nodes(self):
+        node_1 = TextNode("With **bold** words", TextType.TEXT)
+        node_2 = TextNode(
+            "With **bold** words **here** and an _italicised_ word", TextType.TEXT
+        )
+        new_nodes = split_nodes_delimiter([node_1, node_2], "**", TextType.BOLD)
+        new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("With ", TextType.TEXT),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" words", TextType.TEXT),
+                TextNode("With ", TextType.TEXT),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" words ", TextType.TEXT),
+                TextNode("here", TextType.BOLD),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("italicised", TextType.ITALIC),
+                TextNode(" word", TextType.TEXT),
+            ],
+        )
+
+    def test_split_node_delimiter_no_formatting(self):
+        node = TextNode("This is a text node with no formatting", TextType.TEXT)
+        self.assertListEqual([node], [node])
+
+    """Test extract_markdown_images and links functions"""
+
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is an image of the Python logo ![image of the python logo](https://i.imgur.com/zjjcJKZ.png), and another ![image of the python logo 2](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual(
+            matches,
+            [
+                ("image of the python logo", "https://i.imgur.com/zjjcJKZ.png"),
+                ("image of the python logo 2", "https://i.imgur.com/zjjcJKZ.png"),
+            ],
+        )
+
+    def test_extract_markdown_images_mixed_text(self):
+        matches = extract_markdown_images(
+            "Here is a [link](https://www.boot.dev) image 1: ![image of a cat sitting](src/cat.png), image2: ![image of an orange cat](src/cat2.png)"
+        )
+        self.assertListEqual(
+            matches,
+            [
+                ("image of a cat sitting", "src/cat.png"),
+                ("image of an orange cat", "src/cat2.png"),
+            ],
+        )
+
+    def test_extract_markdown_images_no_images(self):
+        matches = extract_markdown_links(
+            "image 1: ![image of a cat sitting](src/cat.png), image2: ![image of an orange cat](src/cat2.png)"
+        )
+        self.assertListEqual(matches, [])
+
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_links(
+            "This is a text with a link [to boot dev](https://www.boot.dev). Here is a second link to [Google](https://www.google.com)"
+        )
+        self.assertListEqual(
+            matches,
+            [
+                ("to boot dev", "https://www.boot.dev"),
+                ("Google", "https://www.google.com"),
+            ],
+        )
+
+    def test_extract_markdown_links_no_links(self):
+        matches = extract_markdown_links(
+            "image 1: ![image of a cat sitting](src/cat.png), image2: ![image of an orange cat](src/cat2.png)"
+        )
+        self.assertListEqual(matches, [])
+
+    def test_extract_markdown_links_mixed_text(self):
+        matches = extract_markdown_links(
+            "This is a text with a link [to boot dev](https://www.boot.dev). Here is a second link to [Google](https://www.google.com)"
+        )
+        self.assertListEqual(
+            matches,
+            [
+                ("to boot dev", "https://www.boot.dev"),
+                ("Google", "https://www.google.com"),
+            ],
+        )
