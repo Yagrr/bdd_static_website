@@ -146,7 +146,7 @@ def extract_markdown_links(text_md: str) -> list[tuple]:
     return matches
 
 
-def split_nodes_images(nodes_old: list[TextNode]):
+def split_nodes_image(nodes_old: list[TextNode]):
     list_new_nodes = []
     for node_old in nodes_old:
         list_extracted_nodes = []
@@ -231,6 +231,8 @@ def split_nodes_images(nodes_old: list[TextNode]):
 
         list_new_nodes.extend(list_extracted_nodes)
 
+    return list_new_nodes
+
 
 def split_nodes_link(nodes_old):
     list_new_nodes = []
@@ -314,3 +316,5 @@ def split_nodes_link(nodes_old):
             previous_delimiter_length = len(delimiter)
 
         list_new_nodes.extend(list_extracted_nodes)
+
+    return list_new_nodes
