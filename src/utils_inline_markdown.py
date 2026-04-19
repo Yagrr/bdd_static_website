@@ -38,7 +38,9 @@ def split_nodes_delimiter(
             continue
 
         nested_nodes_to_add = detect_delimited_nodes_to_add(
-            node_old, delimiter, text_type
+            node_old,
+            delimiter,
+            text_type,
         )
         new_nodes.extend(nested_nodes_to_add)
     return new_nodes
@@ -51,10 +53,12 @@ def detect_delimited_nodes_to_add(
     according to a given delimiter into a list of TextNodes.
 
 
-    Used to detect text in the input Textnode located etween characters matching the
+    Used to detect text in the input Textnode located between characters matching the
     input delimiter to create TextNodes of matching input text_type. If text is
     not within the given delimiter, appends as TextNode of TextType.TEXT into
     the returned list.
+
+    Can handle unclosed delimiter edge cases.
 
     Returns an empty list if the input TextNode.text is empty.
     """
@@ -80,10 +84,11 @@ def detect_delimited_nodes_to_add(
         if text_after_delimiter != "":
             split_text = split_text[2].split(delimiter, maxsplit=2)
         else:
-            nodes_to_add.append(TextNode(text_in_delimiter, text_type))
+            return nodes_to_add
 
-    # Handle remaining split text, as it may contain an unclosed delimiter
-    # where len(split_text) == 2
+    # Edge case: split text contains an unclosed delimiter
+    # since text_after_delimiter != "" splits the text again but has broken out
+    # of while loop
     if len(split_text) == 2:
         nodes_to_add.append(TextNode(delimiter.join(split_text), TextType.TEXT))
     else:
@@ -100,6 +105,8 @@ def extract_markdown_images(text_md: str) -> list[tuple]:
     matching the markdown image pattern to return a list of tuples
     where each tuple contains the alt text and associated URL of any markdown
     images contained within the string.
+
+    If none detected, returns []
 
     Example:
     ```
@@ -122,6 +129,8 @@ def extract_markdown_links(text_md: str) -> list[tuple]:
     each tuple contains the anchor text and associated URL contained within the
     input string.
 
+    If none detected, returns []
+
     Example:
     ```
     text = "This is a text with a link to [a website](https://www.boot.dev)
@@ -135,3 +144,173 @@ def extract_markdown_links(text_md: str) -> list[tuple]:
     matches = re.findall(pattern_link, text_md)
 
     return matches
+
+
+def split_nodes_images(nodes_old: list[TextNode]):
+    list_new_nodes = []
+    for node_old in nodes_old:
+        list_extracted_nodes = []
+        if node_old.text == "":
+            continue
+        if node_old.text_type != TextType.TEXT:
+            list_new_nodes.append(node_old)
+            continue
+
+        list_tuple_extracted_images = extract_markdown_images(node_old.text)
+
+        # No images detected; skip to next node.
+        if list_tuple_extracted_images == []:
+            list_new_nodes.append(node_old)
+            continue
+
+        # Initialising - to be used later
+        idx_previous_delimiter_start_position = 0
+        previous_delimiter_length = 0
+
+        for k, image_tuple in enumerate(list_tuple_extracted_images):
+            image_alt_text = image_tuple[0]
+            image_source = image_tuple[1]
+            delimiter = f"![{image_alt_text}]({image_source})"
+            split_text = node_old.text.split(delimiter, maxsplit=1)
+
+            # Delimiter is at the beginning of node text.
+            if split_text[0] == "":
+                list_extracted_nodes.append(
+                    TextNode(image_alt_text, TextType.IMG, image_source)
+                )
+                continue
+
+            # Delimiter is at the end of node text.
+            if split_text[1] == "":
+                list_extracted_nodes.append(
+                    TextNode(image_alt_text, TextType.IMG, image_source)
+                )
+                continue
+
+            """
+            First tuple
+            Delimiter is not at the beginning of node text.
+            split_text[0] is guaranteed to be some text that is not TextType.IMG
+            """
+            if k == 0:
+                idx_previous_delimiter_start_position = split_text.index(delimiter)
+                previous_delimiter_length = len(delimiter)
+                list_extracted_nodes.append(
+                    TextNode(
+                        split_text[0],
+                        TextType.TEXT,
+                    )
+                )
+
+                list_extracted_nodes.append(
+                    TextNode(image_alt_text, TextType.IMG, image_source)
+                )
+                continue
+
+            """ 
+            Now in second tuple, slice text to indexes corresponding to union
+            of previous split_text[0] and where the current delimiter ends.
+            Noting that the split_text[0] includes any and all text to the left
+            of the current delimiter.
+            text_between_images = (text to the left of current delimiter) sliced to
+            [where the last delimiter ended : end of split_text[0]]
+            """
+            text_between_images = split_text[0][
+                idx_previous_delimiter_start_position + previous_delimiter_length - 1 :
+            ]
+
+            list_extracted_nodes.append(TextNode(text_between_images, TextType.TEXT))
+            list_extracted_nodes.append(
+                TextNode(image_alt_text, TextType.IMG, image_source)
+            )
+
+            # Update the position where the delimiter is detected, and the
+            # length of the previous delimiter
+            idx_previous_delimiter_start_position = split_text.index(delimiter)
+            previous_delimiter_length = len(delimiter)
+
+        list_new_nodes.extend(list_extracted_nodes)
+
+
+def split_nodes_link(nodes_old):
+    list_new_nodes = []
+    for node_old in nodes_old:
+        list_extracted_nodes = []
+        if node_old.text == "":
+            continue
+        if node_old.text_type != TextType.TEXT:
+            list_new_nodes.append(node_old)
+            continue
+
+        list_tuple_extracted_links = extract_markdown_links(node_old.text)
+
+        # No links detected; skip to next node.
+        if list_tuple_extracted_links == []:
+            list_new_nodes.append(node_old)
+            continue
+
+        # Initialising - to be used later
+        idx_previous_delimiter_start_position = 0
+        previous_delimiter_length = 0
+
+        for k, link_tuple in enumerate(list_tuple_extracted_links):
+            link_text = link_tuple[0]
+            link_url = link_tuple[1]
+            delimiter = f"[{link_text}]({link_url})"
+            split_text = node_old.text.split(delimiter, maxsplit=1)
+
+            # Delimiter is at the beginning of node text.
+            if split_text[0] == "":
+                list_extracted_nodes.append(
+                    TextNode(link_text, TextType.LINK, link_url)
+                )
+                continue
+
+            # Delimiter is at the end of node text.
+            if split_text[1] == "":
+                list_extracted_nodes.append(
+                    TextNode(link_text, TextType.LINK, link_url)
+                )
+                continue
+
+            """
+            First tuple
+            Delimiter is not at the beginning of node text.
+            split_text[0] is guaranteed to be some text that is not TextType.IMG
+            """
+            if k == 0:
+                idx_previous_delimiter_start_position = split_text.index(delimiter)
+                previous_delimiter_length = len(delimiter)
+                list_extracted_nodes.append(
+                    TextNode(
+                        split_text[0],
+                        TextType.TEXT,
+                    )
+                )
+
+                list_extracted_nodes.append(
+                    TextNode(link_text, TextType.LINK, link_url)
+                )
+                continue
+
+            """ 
+            Now in second tuple, slice text to indexes corresponding to union
+            of previous split_text[0] and where the current delimiter ends.
+            Noting that the split_text[0] includes any and all text to the left
+            of the current delimiter.
+            text_between_links = (text to the left of current delimiter) sliced to
+            [where the last delimiter ended : end of split_text[0]]
+            """
+            text_between_links = split_text[0][
+                idx_previous_delimiter_start_position + previous_delimiter_length - 1 :
+            ]
+
+            list_extracted_nodes.append(TextNode(text_between_links, TextType.TEXT))
+            list_extracted_nodes.append(TextNode(link_text, TextType.LINK, link_url))
+
+            # Update the position where the delimiter is detected, and the
+            # length of the previous delimiter
+            idx_previous_delimiter_start_position = split_text.index(delimiter)
+            previous_delimiter_length = len(delimiter)
+
+        list_new_nodes.extend(list_extracted_nodes)
