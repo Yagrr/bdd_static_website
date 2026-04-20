@@ -164,11 +164,25 @@ def split_nodes_image(nodes_old: list[TextNode]) -> list[TextNode]:
             list_new_nodes.append(node_old)
             continue
 
+        """
+        k == 0; first tuple
+        Given previous checks, split_text[0] is guaranteed to be some text that is not
+        the TextType that we want. Append nodes.
+
+        k != 0; after the first tuple.
+        Slice text to indexes corresponding to union
+        of previous split_text[0] and where the current delimiter ends.
+        Noting that the split_text[0] includes any and all text to the left
+        of the current delimiter.
+        text_between_links = (text to the left of current delimiter) sliced to
+        [where the last delimiter ended : end of split_text[0]]
+        """
+
         # Initialising - to be used later
         idx_previous_delimiter_start_position = 0
         previous_delimiter_length = 0
-
         k = -1
+
         for image_tuple in list_tuple_extracted_images:
             image_alt_text = image_tuple[0]
             image_source = image_tuple[1]
@@ -188,11 +202,6 @@ def split_nodes_image(nodes_old: list[TextNode]) -> list[TextNode]:
                 previous_delimiter_length = len(delimiter)
                 continue
 
-            """
-            First tuple
-            Delimiter is not at the beginning of node text.
-            split_text[0] is guaranteed to be some text that is not TextType.IMG
-            """
             if k == 0:
                 list_extracted_nodes.append(
                     TextNode(
@@ -208,14 +217,6 @@ def split_nodes_image(nodes_old: list[TextNode]) -> list[TextNode]:
                 previous_delimiter_length = len(delimiter)
                 continue
 
-            """ 
-            Now in second tuple, slice text to indexes corresponding to union
-            of previous split_text[0] and where the current delimiter ends.
-            Noting that the split_text[0] includes any and all text to the left
-            of the current delimiter.
-            text_between_images = (text to the left of current delimiter) sliced to
-            [where the last delimiter ended : end of split_text[0]]
-            """
             text_between_links = split_text[0][
                 idx_previous_delimiter_start_position + previous_delimiter_length :
             ]
@@ -261,11 +262,25 @@ def split_nodes_link(nodes_old: list[TextNode]) -> list[TextNode]:
             list_new_nodes.append(node_old)
             continue
 
+        """
+        k == 0; first tuple
+        Given previous checks, split_text[0] is guaranteed to be some text that is not
+        the TextType that we want. Append nodes.
+
+        k != 0; after the first tuple.
+        Slice text to indexes corresponding to union
+        of previous split_text[0] and where the current delimiter ends.
+        Noting that the split_text[0] includes any and all text to the left
+        of the current delimiter.
+        text_between_links = (text to the left of current delimiter) sliced to
+        [where the last delimiter ended : end of split_text[0]]
+        """
+
         # Initialising - to be used later
         idx_previous_delimiter_start_position = 0
         previous_delimiter_length = 0
-
         k = -1
+
         for link_tuple in list_tuple_extracted_links:
             link_text = link_tuple[0]
             link_url = link_tuple[1]
@@ -283,11 +298,6 @@ def split_nodes_link(nodes_old: list[TextNode]) -> list[TextNode]:
                 previous_delimiter_length = len(delimiter)
                 continue
 
-            """
-            First tuple
-            Delimiter is not at the beginning of node text.
-            split_text[0] is guaranteed to be some text that is not TextType.LINK
-            """
             if k == 0:
                 list_extracted_nodes.append(
                     TextNode(
@@ -303,14 +313,6 @@ def split_nodes_link(nodes_old: list[TextNode]) -> list[TextNode]:
                 previous_delimiter_length = len(delimiter)
                 continue
 
-            """ 
-            Now in second tuple, slice text to indexes corresponding to union
-            of previous split_text[0] and where the current delimiter ends.
-            Noting that the split_text[0] includes any and all text to the left
-            of the current delimiter.
-            text_between_links = (text to the left of current delimiter) sliced to
-            [where the last delimiter ended : end of split_text[0]]
-            """
             text_between_links = split_text[0][
                 idx_previous_delimiter_start_position + previous_delimiter_length :
             ]
