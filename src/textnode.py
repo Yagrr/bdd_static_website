@@ -1,10 +1,10 @@
 from enum import Enum
+
 from htmlnode import LeafNode
 
 
 class TextType(Enum):
     """Enum of valid Markdown syntax.
-    Pass valid string to assign to constant.
 
     Constants:
     TEXT: Raw text
@@ -17,7 +17,7 @@ class TextType(Enum):
 
     LINK: Text with url
 
-    IMG: Alt text and source for image
+    IMAGE: Alt text and source for image
     """
 
     TEXT = "text"
