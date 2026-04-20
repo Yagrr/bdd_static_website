@@ -7,6 +7,7 @@ from utils_inline_markdown import (
     extract_markdown_images,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 
 
@@ -258,4 +259,138 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"),
             ],
             new_nodes,
+        )
+
+    def test_text_to_text_nodes(self):
+        nodes = text_to_textnodes(
+            "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        )
+        self.assertListEqual(
+            nodes,
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode(
+                    "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+                ),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+        )
+
+    def test_text_to_text_nodes_2(self):
+        text = "This is an ![image](https://i.imgur.com/zjjcJKZ.png). Some _italics_ with **bold words**, code `1 * 1` and a trailing delim_. This is a [link](https://boot.dev). This is a second ![image](https://i.imgur.com/3elNhQu.png)"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This is an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(". Some ", TextType.TEXT),
+                TextNode("italics", TextType.ITALIC),
+                TextNode(" with ", TextType.TEXT),
+                TextNode("bold words", TextType.BOLD),
+                TextNode(", code ", TextType.TEXT),
+                TextNode("1 * 1", TextType.CODE),
+                TextNode(" and a trailing delim_. This is a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+                TextNode(". This is a second ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"),
+            ],
+        )
+
+    def test_text_to_text_nodes_trailing_delimiters(self):
+        text = "This is an ![image](https://i.imgur.com/zjjcJKZ.png). Some _more_ _italics_ with **bold** **words**, code `1 * 1` and a trailing delim_. This is a [link](https://boot.dev). Another [link here](https://boot.dev). This is a second ![image](https://i.imgur.com/3elNhQu.png). Trailing delimiter_ and another ** and a last one `."
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This is an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(". Some ", TextType.TEXT),
+                TextNode("more", TextType.ITALIC),
+                TextNode(" ", TextType.TEXT),
+                TextNode("italics", TextType.ITALIC),
+                TextNode(" with ", TextType.TEXT),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" ", TextType.TEXT),
+                TextNode("words", TextType.BOLD),
+                TextNode(", code ", TextType.TEXT),
+                TextNode("1 * 1", TextType.CODE),
+                TextNode(" and a trailing delim_. This is a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+                TextNode(". Another ", TextType.TEXT),
+                TextNode("link here", TextType.LINK, "https://boot.dev"),
+                TextNode(". This is a second ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"),
+                TextNode(
+                    ". Trailing delimiter_ and another ** and a last one `.",
+                    TextType.TEXT,
+                ),
+            ],
+        )
+
+    def test_text_to_text_nodes_regular_text(self):
+        text = "Some regular text here"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("Some regular text here", TextType.TEXT),
+            ],
+        )
+
+    def test_text_to_text_nodes_bold(self):
+        text = "**Just bold text**"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("Just bold text", TextType.BOLD),
+            ],
+        )
+
+    def test_text_to_text_nodes_italic(self):
+        text = "_Just italic text_"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("Just italic text", TextType.ITALIC),
+            ],
+        )
+
+    def test_text_to_text_nodes_code(self):
+        text = '`text = "text"`'
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode('text = "text"', TextType.CODE),
+            ],
+        )
+
+    def test_text_to_text_nodes_link_with_underscore(self):
+        text = "[link_with_underscore](https://boot.dev)"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("link_with_underscore", TextType.LINK, "https://boot.dev"),
+            ],
+        )
+
+    def test_text_to_text_nodes_image_with_underscore(self):
+        text = "![img_with_underscore](src/meow.png)"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("img_with_underscore", TextType.IMAGE, "src/meow.png"),
+            ],
         )
