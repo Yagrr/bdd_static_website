@@ -35,18 +35,24 @@ class HTMLNode:
         """
         if not self.props:
             return ""
-        try:
-            if self.tag == "a":
+
+        match self.tag:
+            case "a":
                 if "target" in self.props:
-                    return f' href="{self.props["href"]}" target={self.props["target"]}'
+                    return (
+                        f' href="{self.props["href"]}" target="{self.props["target"]}"'
+                    )
                 else:
                     return f' href="{self.props["href"]}"'
 
-            if self.tag == "img":
-                return f' src="{self.props["src"]}" alt="{self.props["alt"]}"'
+            case "img":
+                if "alt" in self.props:
+                    return f' src="{self.props["src"]}" alt="{self.props["alt"]}"'
+                else:
+                    return f' src="{self.props["src"]}"'
 
-        except Exception as e:
-            raise ValueError(f"Error: Invalid props\n{e}")
+            case _:
+                raise ValueError(f"Error: Invalid props\n{self}")
 
     def __repr__(self):
         return f"\nNode of tag: {self.tag}\nvalue: {self.value}\nchildren: {self.children}\nprops: {self.props}\n"
@@ -111,7 +117,7 @@ class ParentNode(HTMLNode):
         object as a string"""
         if not self.tag:
             raise ValueError("Error: ParentNode does not have a tag.")
-        if not self.children:
+        if self.children == []:
             raise ValueError("Error: ParentNode has no children.")
         else:
             children_html = ""
@@ -119,7 +125,6 @@ class ParentNode(HTMLNode):
                 try:
                     children_html += child.to_html()
                 except Exception as e:
-                    print(f"Error fetching children from ParentNode: {e}")
-                    return
+                    raise ValueError(f"Error fetching children from ParentNode: {e}")
 
             return f"<{self.tag}>{children_html}</{self.tag}>"
