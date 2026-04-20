@@ -168,10 +168,10 @@ class TestInlineMarkdown(unittest.TestCase):
         self.assertListEqual(
             [
                 TextNode("This is text with an ", TextType.TEXT),
-                TextNode("image", TextType.IMG, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
                 TextNode(" and another ", TextType.TEXT),
                 TextNode(
-                    "second image", TextType.IMG, "https://i.imgur.com/3elNhQu.png"
+                    "second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"
                 ),
             ],
             new_nodes,
@@ -185,12 +185,12 @@ class TestInlineMarkdown(unittest.TestCase):
         new_nodes = split_nodes_image([node])
         self.assertListEqual(
             [
-                TextNode("image", TextType.IMG, "src/cat.jpg"),
+                TextNode("image", TextType.IMAGE, "src/cat.jpg"),
                 TextNode(". This is **text** with an ", TextType.TEXT),
-                TextNode("image", TextType.IMG, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
                 TextNode(" and another ", TextType.TEXT),
                 TextNode(
-                    "second image", TextType.IMG, "https://i.imgur.com/3elNhQu.png"
+                    "second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"
                 ),
             ],
             new_nodes,
@@ -251,11 +251,11 @@ class TestInlineMarkdown(unittest.TestCase):
         self.assertListEqual(
             [
                 TextNode("This is an ", TextType.TEXT),
-                TextNode("image", TextType.IMG, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
                 TextNode(". This is a ", TextType.TEXT),
                 TextNode("link", TextType.LINK, "https://boot.dev"),
                 TextNode(". This is a second ", TextType.TEXT),
-                TextNode("image", TextType.IMG, "https://i.imgur.com/3elNhQu.png"),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"),
             ],
             new_nodes,
         )

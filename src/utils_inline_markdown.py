@@ -182,7 +182,7 @@ def split_nodes_image(nodes_old: list[TextNode]) -> list[TextNode]:
             # Delimiter is at the beginning of node text.
             if split_text[0] == "":
                 list_extracted_nodes.append(
-                    TextNode(image_alt_text, TextType.IMG, image_source)
+                    TextNode(image_alt_text, TextType.IMAGE, image_source)
                 )
                 idx_previous_delimiter_start_position = node_old.text.index(delimiter)
                 previous_delimiter_length = len(delimiter)
@@ -202,7 +202,7 @@ def split_nodes_image(nodes_old: list[TextNode]) -> list[TextNode]:
                 )
 
                 list_extracted_nodes.append(
-                    TextNode(image_alt_text, TextType.IMG, image_source)
+                    TextNode(image_alt_text, TextType.IMAGE, image_source)
                 )
                 idx_previous_delimiter_start_position = node_old.text.index(delimiter)
                 previous_delimiter_length = len(delimiter)
@@ -222,7 +222,7 @@ def split_nodes_image(nodes_old: list[TextNode]) -> list[TextNode]:
 
             list_extracted_nodes.append(TextNode(text_between_links, TextType.TEXT))
             list_extracted_nodes.append(
-                TextNode(image_alt_text, TextType.IMG, image_source)
+                TextNode(image_alt_text, TextType.IMAGE, image_source)
             )
 
             # Update the position where the delimiter is detected, and the
@@ -336,8 +336,3 @@ def split_nodes_link(nodes_old: list[TextNode]) -> list[TextNode]:
             list_new_nodes.extend(list_extracted_nodes)
 
     return list_new_nodes
-
-
-def text_to_textnodes(text: str) -> List[TextNode]:
-
-    pass
