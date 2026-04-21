@@ -59,3 +59,5 @@ read by someone one day. It was thus equally important for me to keep a clean
 git commit history, and to assume that I'm working in a production environment
 as a way to challenge myself. I think it paid off in the end.
 
+- I hate regex.
+
