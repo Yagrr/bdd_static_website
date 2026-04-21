@@ -97,7 +97,7 @@ This is the same paragraph on a new line
         blocktype = block_to_blocktype(md)
         self.assertEqual(
             blocktype,
-            BlockType.HEADING,
+            BlockType.H1,
         )
 
     def test_block_to_blocktype_heading_2(self):
@@ -105,7 +105,7 @@ This is the same paragraph on a new line
         blocktype = block_to_blocktype(md)
         self.assertEqual(
             blocktype,
-            BlockType.HEADING,
+            BlockType.H2,
         )
 
     def test_block_to_blocktype_heading_3(self):
@@ -113,7 +113,7 @@ This is the same paragraph on a new line
         blocktype = block_to_blocktype(md)
         self.assertEqual(
             blocktype,
-            BlockType.HEADING,
+            BlockType.H3,
         )
 
     def test_block_to_blocktype_heading_4(self):
@@ -121,7 +121,7 @@ This is the same paragraph on a new line
         blocktype = block_to_blocktype(md)
         self.assertEqual(
             blocktype,
-            BlockType.HEADING,
+            BlockType.H4,
         )
 
     def test_block_to_blocktype_heading_5(self):
@@ -129,7 +129,7 @@ This is the same paragraph on a new line
         blocktype = block_to_blocktype(md)
         self.assertEqual(
             blocktype,
-            BlockType.HEADING,
+            BlockType.H5,
         )
 
     def test_block_to_blocktype_heading_6(self):
@@ -137,7 +137,7 @@ This is the same paragraph on a new line
         blocktype = block_to_blocktype(md)
         self.assertEqual(
             blocktype,
-            BlockType.HEADING,
+            BlockType.H6,
         )
 
     def test_block_to_blocktype_heading_7(self):
