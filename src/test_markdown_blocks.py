@@ -2,7 +2,7 @@ import unittest
 
 from markdown_blocks import (
     markdown_to_blocks,
-    block_to_block_type,
+    block_to_blocktype,
     BlockType,
 )
 
@@ -92,121 +92,121 @@ This is the same paragraph on a new line
             ],
         )
 
-    def test_block_to_block_type_heading_1(self):
+    def test_block_to_blocktype_heading_1(self):
         md = "# Heading 1"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.HEADING,
         )
 
-    def test_block_to_block_type_heading_2(self):
+    def test_block_to_blocktype_heading_2(self):
         md = "## Heading 2"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.HEADING,
         )
 
-    def test_block_to_block_type_heading_3(self):
+    def test_block_to_blocktype_heading_3(self):
         md = "### Heading 3"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.HEADING,
         )
 
-    def test_block_to_block_type_heading_4(self):
+    def test_block_to_blocktype_heading_4(self):
         md = "#### Heading 4"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.HEADING,
         )
 
-    def test_block_to_block_type_heading_5(self):
+    def test_block_to_blocktype_heading_5(self):
         md = "##### Heading 5"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.HEADING,
         )
 
-    def test_block_to_block_type_heading_6(self):
+    def test_block_to_blocktype_heading_6(self):
         md = "###### Heading 6"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.HEADING,
         )
 
-    def test_block_to_block_type_heading_7(self):
+    def test_block_to_blocktype_heading_7(self):
         md = "####### Heading 7"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.PARAGRAPH,
         )
 
-    def test_block_to_block_type_code(self):
+    def test_block_to_blocktype_code(self):
         md = """```
         text
         _italic_
         **bold**
         ```"""
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.CODE,
         )
 
-    def test_block_to_block_type_quote(self):
+    def test_block_to_blocktype_quote(self):
         md = "> quoted text here"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.QUOTE,
         )
 
-    def test_block_to_block_type_ul(self):
+    def test_block_to_blocktype_ul(self):
         md = "- Unordered list"
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.UL,
         )
 
-    def test_block_to_block_type_ol(self):
+    def test_block_to_blocktype_ol(self):
         md = """1. Ordered list
             2. Ordered list
             3. Ordered list
             4. Ordered list
             """
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.OL,
         )
 
-    def test_block_to_block_type_ol_2(self):
+    def test_block_to_blocktype_ol_2(self):
         md = """1. Ordered list
             2. Ordered list
             """
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.OL,
         )
 
-    def test_block_to_block_type_ol_break(self):
+    def test_block_to_blocktype_ol_break(self):
         md = """
             1. Ordered list
             2. Ordered list
             4. Ordered list
             5. Ordered list
             """
-        block_type = block_to_block_type(md)
+        blocktype = block_to_blocktype(md)
         self.assertEqual(
-            block_type,
+            blocktype,
             BlockType.PARAGRAPH,
         )

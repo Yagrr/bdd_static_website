@@ -32,7 +32,7 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     return [s for s in split_text if s != ""]
 
 
-def block_to_block_type(block: str) -> BlockType:
+def block_to_blocktype(block: str) -> BlockType:
     if re.match(r"#{1,6} ", block) and len(block.splitlines()) == 1:
         return BlockType.HEADING
     elif len(re.findall(r"^(\`\`\`)|(\`\`\`)$", block)) == 2:
