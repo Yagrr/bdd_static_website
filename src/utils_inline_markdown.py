@@ -341,10 +341,13 @@ def split_nodes_link(nodes_old: list[TextNode]) -> list[TextNode]:
 
 
 def text_to_textnodes(text: str) -> list[TextNode]:
-    node = [TextNode(text, TextType.TEXT)]
-    node = split_nodes_image(node)
-    node = split_nodes_link(node)
-    node = split_nodes_delimiter(node, "`", TextType.CODE)
-    node = split_nodes_delimiter(node, "**", TextType.BOLD)
-    node = split_nodes_delimiter(node, "_", TextType.ITALIC)
-    return node
+    """Converts markdown text containing inline formatting into a list of
+    TextNodes
+    """
+    text_nodes = [TextNode(text, TextType.TEXT)]
+    text_nodes = split_nodes_image(text_nodes)
+    text_nodes = split_nodes_link(text_nodes)
+    text_nodes = split_nodes_delimiter(text_nodes, "`", TextType.CODE)
+    text_nodes = split_nodes_delimiter(text_nodes, "**", TextType.BOLD)
+    text_nodes = split_nodes_delimiter(text_nodes, "_", TextType.ITALIC)
+    return text_nodes
