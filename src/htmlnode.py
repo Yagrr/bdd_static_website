@@ -56,6 +56,11 @@ class HTMLNode:
                     return f' src="{self.props["src"]}" alt="{self.props["alt"]}"'
                 else:
                     return f' src="{self.props["src"]}"'
+            case "blockquote":
+                if "cite" in self.props:
+                    return f' cite="{self.props["cite"]}"'
+                else:
+                    return ""
 
             case _:
                 raise ValueError(f"Error: Invalid props\n{self}")
