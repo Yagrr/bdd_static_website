@@ -14,7 +14,13 @@ class HTMLNode:
     tag as String key, and its content as String pair.
     """
 
-    def __init__(self, tag=None, value=None, children=[], props={}):
+    def __init__(
+        self,
+        tag: str | None = None,
+        value: str | None = None,
+        children: list["HTMLNode"] | list["ParentNode"] | list["LeafNode"] = [],
+        props: dict[str, str | None] = {},
+    ):
         self.tag = tag
         self.value = value
         self.children = children
@@ -74,7 +80,12 @@ class LeafNode(HTMLNode):
     tag as String key, and its content as String pair.
     """
 
-    def __init__(self, tag, value, props={}):
+    def __init__(
+        self,
+        tag: str | None = None,
+        value: str | None = None,
+        props: dict[str, str | None] = {},
+    ):
         super().__init__(tag=tag, value=value, children=[], props=props)
 
     def to_html(self):
@@ -103,13 +114,18 @@ class ParentNode(HTMLNode):
     Data members:
     tag (str): a string representing the HTML tag name (e.g., "p", "a", "h1", etc.).
 
-    children (list[HTMLNode]): a list of HTMLNode objects representing the children of this node
+    children (list[HTMLNode]): a list of HTMLNode objects representing the children of this node, including raw text.
 
     props (dict{str: str}, optional): dictionary of key-value pairs representing the attribute names of the HTML
     tag as String key, and its content as String pair.
     """
 
-    def __init__(self, tag, children, props={}):
+    def __init__(
+        self,
+        tag: str,
+        children: list[HTMLNode] | list[LeafNode] | list["ParentNode"],
+        props: dict[str, str | None] = {},
+    ):
         super().__init__(tag=tag, value=None, children=children, props=props)
 
     def to_html(self):
