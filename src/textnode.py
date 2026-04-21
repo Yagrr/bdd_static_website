@@ -20,11 +20,11 @@ class TextType(Enum):
     IMAGE: Alt text and source for image
     """
 
-    TEXT = "text"
-    BOLD = "bold"
-    ITALIC = "italic"
+    TEXT = None
+    BOLD = "b"
+    ITALIC = "i"
     CODE = "code"
-    LINK = "link"
+    LINK = "a"
     IMAGE = "img"
 
 
