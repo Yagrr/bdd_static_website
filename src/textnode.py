@@ -60,10 +60,22 @@ class TextNode:
 
 def textnode_to_htmlnode(text_node: TextNode) -> LeafNode:
     """Returns a new HTMLNode based on the text_type attribute of the input
-    TextNode.
+    TextNode. LeafNode represents the inline text, representing the children of
+    a ParentNode.
 
-    TODO: add logic for ParentNode creation. Current implementation only
-    creates a new LeafNode
+    TextType.TEXT requires no
+    tag as it represents the raw text contained within the parent node
+    of the associated LeafNode.
+
+    Valid TextTypes and associated LeafNode returns:
+    ```
+    TEXT -> LeafNode(None, text_node.text)
+    BOLD -> LeafNode("b", text_node.text)
+    ITALIC -> LeafNode("i", text_node.text)
+    CODE -> LeafNode("code", text_node.text)
+    LINK -> LeafNode("a", text_node.text, {"href": text_node.url})
+    IMAGE -> LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
+    ```
     """
     match text_node.text_type:
         case TextType.TEXT:

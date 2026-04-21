@@ -341,8 +341,11 @@ def split_nodes_link(nodes_old: list[TextNode]) -> list[TextNode]:
 
 
 def text_to_textnodes(text: str) -> list[TextNode]:
-    """Converts markdown text containing inline formatting into a list of
-    TextNodes
+    """Converts raw markdown text containing inline formatting into a list of
+    TextNodes of appropriate TextTypes.
+
+    Used by text_to_children(), where the output list[TextNode] is chained with
+    textnode_to_htmlnode() functions.
     """
     text_nodes = [TextNode(text, TextType.TEXT)]
     text_nodes = split_nodes_image(text_nodes)
