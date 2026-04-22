@@ -4,6 +4,7 @@ from markdown_blocks import (
     markdown_to_blocks,
     block_to_blocktype,
     BlockType,
+    markdown_to_htmlnode,
 )
 
 
@@ -209,4 +210,101 @@ This is the same paragraph on a new line
         self.assertEqual(
             blocktype,
             BlockType.PARAGRAPH,
+        )
+
+
+class TestBlockMarkdownToHTMLNode(unittest.TestCase):
+    def test_paragraphs(self):
+        md = """
+    This is **bolded** paragraph
+    text in a p
+    tag here
+
+    This is another paragraph with _italic_ text and `code` here
+
+    """
+
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+    def test_h1(self):
+        md = "# Header1 in **bold**"
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(html, "<div><h1>Header1 in <b>bold</b></h1></div>")
+
+    def test_h2(self):
+        md = "## Header2 in _italic_"
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(html, "<div><h2>Header2 in <i>italic</i></h2></div>")
+
+    def test_h4(self):
+        md = "#### Header4 in **bold**"
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(html, "<div><h4>Header4 in <b>bold</b></h4></div>")
+
+    def test_h7_fallback_to_p(self):
+        md = "####### Actually paragraph in **bold**"
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(
+            html, "<div><p>####### Actually paragraph in <b>bold</b></p></div>"
+        )
+
+    def test_codeblock(self):
+        md = """
+    ```
+    This is text that _should_ remain
+    the **same** even with inline stuff
+    ```
+    """
+
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+
+    def test_quoteblock(self):
+        md = """> This is a **quoted** text.
+        >Over multiple lines
+        """
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote><p>This is a <b>quoted</b> text.</p><p>Over multiple lines</p></blockquote></div>",
+        )
+
+    def test_ul(self):
+        md = """- This is an unordered list
+        - list element 2
+
+        - second list element 1
+        - second list element 2"""
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>This is an unordered list</li><li>list element 2</li></ul><ul><li>second list element 1</li><li>second list element 2</li></ul></div>",
+        )
+
+    def test_ol(self):
+        md = """1. This is an ordered list
+        2. list 1 **element** 2
+
+        Text below ordered list
+        """
+        node = markdown_to_htmlnode(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ol><li>This is an ordered list</li><li>list 1 <b>element</b> 2</li></ol><p>Text below ordered list</p></div>",
         )
