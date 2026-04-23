@@ -2,9 +2,11 @@
 
 This guided project is part of the [Boot.dev](www.boot.dev) back-end developer
 path. It is intended to be used as a learning resource for myself so that I can
-get a better understanding of the inner workings of static website generators by making my own.
+get a better understanding of the inner workings of static website generators
+by making my own.
 
-Initial start date: 14 April 2026 at day 32 on Boot.dev. Just finished Data Structures and Algorithms course.
+Initial start date: 14 April 2026 at day 32 on Boot.dev. Just finished Data
+Structures and Algorithms course.
 
 ## Reflections
 
@@ -12,14 +14,14 @@ Initial start date: 14 April 2026 at day 32 on Boot.dev. Just finished Data Stru
 
 - The most satisfying part of this whole project was being able to build
 something that I can call my own; something that I've thought about for days on
-end, and written by my own hands. 
+end, and written by my own hands.
 
-- For better or worse, the way I programmed
-this static site generator differed in significant ways from the solution
-files. I can see the trade-offs between complexity and simplicity, and how my
-own code can handle unexpected markdown formatting better than the provided solutions,
-albeit being a little messier to work with and less performant (I mean, it's
-Python, so what else do you expect?).
+- For better or worse, the way I programmed this static site generator differed
+in significant ways from the solution files. I can see the trade-offs between
+complexity and simplicity, and how my own code can handle unexpected markdown
+formatting better than the provided solutions, albeit being a little messier to
+work with and less performant (I mean, it's Python, so what else do you
+expect?).
 
 - I've been using Neovim for the entirety of this back-end development course,
 and will continue to do so in the future. It's fantastic to finally be able to
@@ -28,7 +30,6 @@ limits of what I already know, given the fact that I've been using Vim for the
 past 2 years prior to this course (though not really for coding), and I'm STILL
 learning new ways of navigating the IDE, whilst also using new functionalities
 that boost my productivity to the max.
-
 
 ### Most challenging moments
 
@@ -40,7 +41,9 @@ more complicated than the solution files, but turned out to be more robust as
 it is able to handle unclosed delimiters. I took inspirations from how Obsidian
 and Discord handles markdown format. However, I was unable to replicate italics
 formatting behaviour where closing `_` characters wouldn't format to italics
-unless if it's followed by a space. I'm sure there's a good reason for it, but these lessons have already gone on for too long and I'd like to move onto the "Memory Management in C" chapter.
+unless if it's followed by a space. I'm sure there's a good reason for it, but
+these lessons have already gone on for too long and I'd like to move onto the
+"Memory Management in C" chapter.
 
 - _Refactoring codebase and test cases_: I discovered that I split utility
 functions across multiple files for no good reason. I ended up merging
@@ -59,5 +62,4 @@ read by someone one day. It was thus equally important for me to keep a clean
 git commit history, and to assume that I'm working in a production environment
 as a way to challenge myself. I think it paid off in the end.
 
-- I hate regex.
-
+- I hate regex. (Update - 23 April 2026: It's complicated)
