@@ -173,6 +173,9 @@ def markdown_to_htmlnode(md: str) -> HTMLNode:
                 block_str = re.sub(" {2,}", " ", block_str)
                 children_main.append(ParentNode("p", text_to_children(block_str)))
 
+        with open("./log.txt", "w") as f:
+            f.write(str(children_main))
+
     return ParentNode("div", children_main)
 
 
@@ -267,7 +270,10 @@ def create_htmlnodes_from_md_blockquote(
     children_quote = []
     for quote_line in quote_strip:
         quote_text = re.findall(r"(?:^>\s?)(.*)", quote_line)[0]
-        children_quote.append(ParentNode("p", text_to_children(quote_text)))
+        if quote_text == "":
+            children_quote.append(ParentNode("p", [LeafNode(None, " ")]))
+        else:
+            children_quote.extend(text_to_children(quote_text))
     return ParentNode(block_type.value, children_quote)
 
 

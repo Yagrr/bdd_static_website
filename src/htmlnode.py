@@ -66,7 +66,7 @@ class HTMLNode:
                 raise ValueError(f"Error: Invalid props\n{self}")
 
     def __repr__(self):
-        return f"\nNode of tag: {self.tag}\nvalue: {self.value}\nchildren: {self.children}\nprops: {self.props}\n"
+        return f"\n{type(self)} of tag: {self.tag}\nvalue: {self.value}\nchildren: {self.children}\nprops: {self.props}\n"
 
 
 class LeafNode(HTMLNode):
@@ -97,7 +97,7 @@ class LeafNode(HTMLNode):
         """Returns the entire HTML syntax representation of the LeafNode object
         as a string"""
         if not self.value:
-            raise ValueError("Error: LeafNode does not have a value.")
+            raise ValueError(f"Error - LeafNode does not have a value: {self}")
         if not self.tag:
             return str(self.value)
 
@@ -137,15 +137,19 @@ class ParentNode(HTMLNode):
         """Returns the entire HTML syntax representation of the ParentNode
         object as a string"""
         if not self.tag:
-            raise ValueError("Error: ParentNode does not have a tag.")
+            raise ValueError(
+                f"\nError - ParentNode does not have a tag: {print(self)}\n"
+            )
         if self.children == []:
-            raise ValueError("Error: ParentNode has no children.")
+            raise ValueError(f"\nError - ParentNode has no children: {print(self)}\n")
         else:
             children_html = ""
             for child in self.children:
                 try:
                     children_html += child.to_html()
                 except Exception as e:
-                    raise ValueError(f"Error fetching children from ParentNode: {e}")
+                    raise ValueError(
+                        f"\nError fetching children from ParentNode: {e}\n"
+                    )
 
             return f"<{self.tag}>{children_html}</{self.tag}>"
