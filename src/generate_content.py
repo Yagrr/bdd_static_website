@@ -15,7 +15,9 @@ def extract_title(markdown: str) -> str:
         raise Exception("Error extract_title(): found no h1 header in Markdown")
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str | Path):
+def generate_page(
+    from_path: str, template_path: str, dest_path: str | Path, basepath: str
+):
     """From an input directory `from_path` containing a .md file. Convert the
     .md file into its HTML equivalent to input path `dest_path` using the
     template file at `template_path`.
@@ -49,6 +51,8 @@ def generate_page(from_path: str, template_path: str, dest_path: str | Path):
 
             webpage = re.sub("{{ Title }}", title, template)
             webpage = re.sub("{{ Content }}", html, webpage)
+            webpage = re.sub('href="/', f'href="{basepath}', webpage)
+            webpage = re.sub('src="/', f'src="{basepath}', webpage)
     except IOError as e:
         print(f"Operation failed: {e}")
     except Exception as e:
@@ -66,7 +70,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str | Path):
 
 
 def generate_pages_recursive(
-    dir_path_content: str, template_path: str, dest_dir_path: str
+    dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str
 ):
     """From an input directory `dir_path_content`, convert all .md files into
     its HTML equivalent to input path `dest_dir_path` using the template file
@@ -85,10 +89,18 @@ def generate_pages_recursive(
             src = os.path.join(path_src, f)
             path_new_item = os.path.join(path_dst, f.name)
             if f.is_dir():
-                generate_pages_recursive(src, template_path, path_new_item)
+                generate_pages_recursive(
+                    src,
+                    template_path,
+                    path_new_item,
+                    basepath,
+                )
             else:
                 print(f"Generating page: '{src}'\nto: '{path_dst}'")
                 generate_page(
-                    src, template_path, Path(path_new_item).with_suffix(".html")
+                    src,
+                    template_path,
+                    Path(path_new_item).with_suffix(".html"),
+                    basepath,
                 )
     return
