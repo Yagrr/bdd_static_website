@@ -274,13 +274,14 @@ class TestBlockMarkdownToHTMLNode(unittest.TestCase):
 
     def test_quoteblock(self):
         md = """> This is a **quoted** text.
+        >
         >Over multiple lines
         """
         node = markdown_to_htmlnode(md)
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><blockquote><p>This is a <b>quoted</b> text.</p><p>Over multiple lines</p></blockquote></div>",
+            "<div><blockquote>This is a <b>quoted</b> text.<p> </p>Over multiple lines</blockquote></div>",
         )
 
     def test_ul(self):

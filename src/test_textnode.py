@@ -37,7 +37,7 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
     def test_text(self):
         node_1 = TextNode("hello", TextType.TEXT)
         node_2 = textnode_to_htmlnode(node_1)
-        self.assertEqual(node_2.tag, None)
+        self.assertEqual(node_2.tag, "")
         self.assertEqual(node_2.value, "hello")
 
     def test_italic(self):
@@ -60,7 +60,7 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         node_1 = TextNode("some image here", TextType.IMAGE, "/hello.png")
         node_2 = textnode_to_htmlnode(node_1)
         self.assertEqual(node_2.tag, "img")
-        self.assertEqual(node_2.value, "")
+        self.assertEqual(node_2.value, " ")
         self.assertEqual(
             node_2.props,
             {"src": "/hello.png", "alt": "some image here"},

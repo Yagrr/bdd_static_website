@@ -71,7 +71,7 @@ class TestHTMLNode(unittest.TestCase):
             props_node,
         )
 
-        result_assert = f"\nNode of tag: {'a'}\nvalue: {'Some text here'}\nchildren: {[node_child1, node_child2]}\nprops: {props_node}\n"
+        result_assert = f"\n{"<class 'htmlnode.HTMLNode'>"} of tag: {'a'}\nvalue: {'Some text here'}\nchildren: {[node_child1, node_child2]}\nprops: {props_node}\n"
 
         self.assertEqual(
             node.__repr__(),
@@ -107,7 +107,7 @@ class TestHTMLNode(unittest.TestCase):
 
     def test_parent_node_to_html_raise_value_error_no_tag(self):
         with self.assertRaises(ValueError):
-            ParentNode(None, []).to_html()
+            ParentNode("", []).to_html()
 
     def test_parent_node_to_html_with_children(self):
         child_node = LeafNode("span", "child text")

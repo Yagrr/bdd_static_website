@@ -140,7 +140,9 @@ def extract_markdown_links(text_md: str) -> list[tuple]:
     """
 
     # Pattern: "[*](*)", not preceded by '!'
-    pattern_link = r'(?<!!)\[(.*)\]\(([a-zA-Z0-9.:/@\'"\-\_]+)(?=\))'
+    pattern_link = (
+        r'(?<!!)\[([a-zA-Z0-9.><"\'\-\_ ]+)\]\(([a-zA-Z0-9.:/@\'"\-\_]+)(?=\))'
+    )
     matches = re.findall(pattern_link, text_md)
 
     return matches
