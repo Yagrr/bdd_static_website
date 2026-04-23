@@ -68,6 +68,9 @@ def generate_page(from_path: str, template_path: str, dest_path: str | Path):
 def generate_pages_recursive(
     dir_path_content: str, template_path: str, dest_dir_path: str
 ):
+    """From an input directory `dir_path_content`, convert all .md files into
+    its HTML equivalent to input path `dest_dir_path` using the template file
+    at `template_path`."""
 
     path_src = os.path.normpath(os.path.abspath(dir_path_content))
     template_path = os.path.normpath(os.path.abspath(template_path))
