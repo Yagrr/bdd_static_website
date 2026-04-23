@@ -13,7 +13,7 @@ dir_path_template = "./template.html"
 
 def main():
     if len(sys.argv) > 1:
-        basepath = sys.argv[0]
+        basepath = sys.argv[1]
     else:
         basepath = "/"
 
