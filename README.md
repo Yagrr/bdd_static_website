@@ -8,6 +8,10 @@ by making my own.
 Initial start date: 14 April 2026 at day 32 on Boot.dev. Just finished Data
 Structures and Algorithms course.
 
+## Simplified diagram for how it works
+
+![Codebase schematic diagram](./schematic_bdd_static_website.png)
+
 ## Reflections
 
 ### Highlights
